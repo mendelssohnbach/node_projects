@@ -19,7 +19,7 @@ function promptGet() {
   // 名前付きインポートを使って csvWriter から createObjectCsvWriter を取り込む
   const csvWriter = createObjectCsvWriter({
     path,
-    append: fileExistsAndNotEmpty, // データの使いを指示
+    append: fileExistsAndNotEmpty, // データの追加を指示
     // ヘッダー情報を csvWriter に設定
     header: [
       { id: 'name', title: 'NAME' },
@@ -55,7 +55,7 @@ function promptGet() {
      */
     async saveToCSV() {
       try {
-        const { name, number, email } = this; // Personのインスタンスを構造分解知る
+        const { name, number, email } = this; // Personのインスタンスを構造分解する
         // csvWriter.writeRecords を使ってデータの行をCSVファイルに書き込む
         await csvWriter.writeRecords([{ name, number, email }]);
         console.log(`${name} Saved!`);

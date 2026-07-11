@@ -19,7 +19,7 @@ function readLine() {
    * @returns {Promise<string>} ユーザーが入力した文字列
    */
   // const readLineAsync = (message) => {
-  //   console.log('渡ってきたmessage:', message); // ここで中身を確認できます
+  //   console.log('[DEBUG] message = ', message); // ここで中身を確認できます
   //   return new Promise((resolve) => readline.question(message, resolve));
   // };
   const readLineAsync = (message) => new Promise((resolve) => readline.question(message, resolve));
@@ -65,7 +65,7 @@ function readLine() {
   const startApp = async () => {
     let shouldContinue = true;
     while (shouldContinue) {
-      const name = await readLineAsync('Contact Name; ');
+      const name = await readLineAsync('Contact Name: ');
       const number = await readLineAsync('Contact Number: ');
       const email = await readLineAsync('Contact Email: ');
 

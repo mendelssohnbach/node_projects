@@ -1,6 +1,7 @@
 import { createObjectCsvWriter } from 'csv-writer';
 import fs from 'node:fs';
 import prompt from 'prompt';
+import { isValidNumber, isValidEmail } from './validators.js';
 
 function promptGet() {
   /**
@@ -40,18 +41,6 @@ function promptGet() {
 
   prompt.start();
   prompt.message = '';
-
-  /**
-   * メールアドレスの形式を検証する正規表現
-   * @type {RegExp}
-   */
-  const emailRegex = /\S+@\S+\.\S+/;
-
-  /**
-   * 電話番号が数字のみで構成されているかを検証する正規表現
-   * @type {RegExp}
-   */
-  const numberRegex = /^\d+$/;
 
   /**
    * 連絡先情報を表すクラス
@@ -102,13 +91,13 @@ function promptGet() {
     const responses = /** @type {any} */ (rawResponses);
 
     // 2章 1-b
-    if (!numberRegex.test(responses.number)) {
+    if (!isValidNumber(responses.number)) {
       console.error('Error: Phone number should contain only digits.'); // 2章 1-c
       return promptWithValidation(); // 2章 1-d
     }
 
     // 2章 1-b
-    if (!emailRegex.test(responses.email)) {
+    if (!isValidEmail(responses.email)) {
       console.error('Error: Invalid email format.'); // 2章 1-c
       return promptWithValidation(); // 2章 1-d
     }

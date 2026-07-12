@@ -2,15 +2,10 @@ import prompt from 'prompt';
 import { isValidNumber, isValidEmail } from './validators.js';
 import { Person } from './person.js';
 
+/**
+ * 連絡先の入力受付から保存、継続確認までのメインループを開始する。
+ */
 function promptGet() {
-  /**
-   * 出力例 // 2章 2-d
-   * NAME,NUMBER,EMAIL,CREATED_AT
-   * alice,1,alice@example.com,2026-07-12T06:58:54.749Z
-   * bob,2,bob@example.com,2026-07-12T06:59:10.746Z
-   * candy,3,candy@example.com,2026-07-12T06:59:24.285Z
-   */
-
   prompt.start();
   prompt.message = '';
 

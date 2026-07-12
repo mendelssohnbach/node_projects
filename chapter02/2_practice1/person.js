@@ -15,6 +15,13 @@ const fileExistsAndNotEmpty = fs.existsSync(path) && fs.statSync(path).size > 0;
 
 /**
  * CSVファイルを書き出すためのライターオブジェクト
+ *
+ * 出力例 // 2章 2-d
+ * NAME,NUMBER,EMAIL,CREATED_AT
+ * alice,1,alice@example.com,2026-07-12T06:58:54.749Z
+ * bob,2,bob@example.com,2026-07-12T06:59:10.746Z
+ * candy,3,candy@example.com,2026-07-12T06:59:24.285Z
+ *
  * @type {{ writeRecords: (records: Array<Record<string, string>>) => Promise<void> }}
  */
 const csvWriter = createObjectCsvWriter({

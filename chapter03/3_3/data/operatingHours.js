@@ -1,3 +1,4 @@
+// 営業時間データ
 export default {
   defaultHours: {
     open: 11,

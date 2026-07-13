@@ -1,5 +1,6 @@
 // メニュー項目の配列
 // JavaScriptの配列リテラル
+// メニューデータ
 export default [
   {
     name: 'Broccoli Pie',

@@ -4,6 +4,9 @@ const app = fastify();
 const port = 3000;
 
 // ルート / でHTTP GETリクエストをリッスンするルートを登録
+// response: リクエスの処理
+// reply: レスポンスの送信
+// async: Promiseベースのリーティングを利用
 app.get('/', async (request, reply) => {
   return "Welcome to What's Fare is Fair!";
 });

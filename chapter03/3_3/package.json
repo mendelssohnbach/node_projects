@@ -1,0 +1,15 @@
+{
+  "name": "restaurant_web_server",
+  "version": "1.0.0",
+  "description": "An web application for a local restaurant.",
+  "license": "ISC",
+  "author": "mendelssohnusaic",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "fastify": "^5.10.0"
+  }
+}

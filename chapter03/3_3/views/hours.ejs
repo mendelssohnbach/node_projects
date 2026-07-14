@@ -1,15 +1,27 @@
-<h1>Our Hours</h1>
-<% for(let day of days) { %> <% const hoursObj = operatingHours[day] ||
-operatingHours['defaultHours'] %>
-<section style="display: inline-flex; flex-direction: column; padding: 5px">
-  <h2><%= day.toUpperCase() %></h2>
-  <div>
-    <% if (hoursObj.open) {%>
-    <p>Open: <%= hoursObj.open %></p>
-    <p>Closed: <%= hoursObj.closed %></p>
-    <% } else {%>
-    <p>CLOSED</p>
-    <% } %>
-  </div>
-</section>
-<% }%>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Restaurant</title>
+    <link rel="stylesheet" href="public/stylesheets/style.css" />
+  </head>
+  <body>
+    <h1>Our Hours</h1>
+    <div class="hours-container">
+      <% for(let day of days) { %> <% const hoursObj = operatingHours[day] ||
+      operatingHours['defaultHours'] %>
+      <section>
+        <h2><%= day.toUpperCase() %></h2>
+        <div>
+          <% if (hoursObj.open) {%>
+          <p><strong>Open:</strong> <%= hoursObj.open %></p>
+          <p><strong>Closed:</strong> <%= hoursObj.closed %></p>
+          <% } else {%>
+          <p><strong>CLOSED</strong></p>
+          <% } %>
+        </div>
+      </section>
+      <% }%>
+    </div>
+  </body>
+</html>

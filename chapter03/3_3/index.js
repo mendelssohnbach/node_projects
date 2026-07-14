@@ -45,6 +45,11 @@ app.get('/hours', (req, reply) => {
   reply.view('views/hours.ejs', { operatingHours, days });
 });
 
+// 3章:1-c
+app.get('/about', (req, reply) => {
+  reply.view('views/about.ejs');
+});
+
 // サーバを起動し、定義したポートにバインドする
 await app.listen({ port, host: '0.0.0.0' });
 console.log(`Web Server is listening at http://localhost:${port}`);

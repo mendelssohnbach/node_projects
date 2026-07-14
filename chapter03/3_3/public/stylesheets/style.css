@@ -141,3 +141,10 @@ ol li a {
   border-radius: 4px;
   text-decoration: none;
 }
+
+/* About Page */
+.about-content {
+  max-width: 700px;
+  margin: 1rem;
+  line-height: 1.6;
+}

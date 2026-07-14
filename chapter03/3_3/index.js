@@ -1,11 +1,21 @@
+import fastifyStatic from '@fastify/static';
 import fastifyView from '@fastify/view';
 import ejs from 'ejs';
 import Fastify from 'fastify';
+import { join } from 'path'; // クロスプラットホーム五感のファイルパスを作成
 import menuItems from './data/menuItems.js';
 import operatingHours from './data/operatingHours.js';
+// プロジェクトのルートレベルにあるpublicディレクトリへの絶対パスを作成
+const publicPath = join(process.cwd(), 'public');
 
 const app = Fastify();
 const port = 3000;
+
+// 静的ファイルを提供するために fastifyStatic プラグインを登録
+app.register(fastifyStatic, {
+  root: publicPath, // 静的ファイルの提供元ディレクトリを設定
+  prefix: '/public/', // URLプレフィックスを `/public? に設定
+});
 
 // EJSをテンプレートエンジンとして設定
 app.register(fastifyView, {

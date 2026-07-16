@@ -7,8 +7,12 @@ const prompt = promptModule();
 const mockDB = { passwords: {} };
 
 const saveNewPassword = (password) => {
-  // プレーンテキストをハッシュ化し、データベース内の hash キーにセット
+  // プレーンテキストパスワードをハッシュ化し、データベース内の hash キーにセット
   mockDB.hash = bcrypt.hashSync(password, 10);
   console.log('Main password has been set!');
   showMenu();
 };
+
+// プレーンテキストパスワードとハッシュ化パスワードを比較する関数
+// 入力されたパスワードとローカルデータベース内の値を比較する
+const compareHashedPassword = async (password) => await bcrypt.compare(password, mockDB.hash);

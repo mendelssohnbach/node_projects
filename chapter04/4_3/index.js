@@ -68,3 +68,31 @@ const showMenu = async () => {
     showMenu();
   }
 };
+
+const viewPasswords = () => {
+  // mockDBからpasswords を分割代入する
+  const { passwords } = mockDB;
+  const entries = Object.entries(passwords);
+  if (entries.length === 0) {
+    console.log('No passwords saved yet.');
+  } else {
+    // entries: 2次元配列(source, password)
+    // forEach: 配列の要素を順次処理
+    // データベース内のパスワードを繰り返し出力
+    entries.forEach(([key, value], index) => {
+      console.log(`${index + 1}, ${key} => ${value}`);
+    });
+  }
+  showMenu();
+};
+
+const promptManageNewPassword = () => {
+  // 管理したいソース名と新しいパスワードの入力を促す
+  const source = prompt('Enter name for password: ');
+  const password = prompt('Enter password to save: ');
+
+  // ソースとパスワードのペアをmockDBに保存
+  mockDB.passwords[source] = password;
+  console.log(`Password for ${source} has been saved!`);
+  showMenu();
+};

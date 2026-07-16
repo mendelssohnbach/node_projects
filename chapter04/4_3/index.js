@@ -43,3 +43,28 @@ const promptOldPassword = async () => {
     }
   }
 };
+
+const showMenu = async () => {
+  // 4つの選択肢を表示
+  console.log(`
+    1. View passwords
+    2. Manage new password
+    3. Verify password
+    4. Exit`);
+  const response = prompt('>');
+
+  // 1-4の値を選択すると
+  if (response === '1')
+    viewPasswords(); // 1: 新しいパスワードの追加
+  else if (response === '2')
+    promptManageNewPassword(); // // 2: 新しいパスワードの追加
+  else if (response === '3')
+    promptOldPassword(); // :3: マスターパスワードのバリデーション
+  else if (response === '4')
+    process.exit(); // 4: アプリの終了
+  else {
+    // 有効な値が選択されない場合は、再選択を促す
+    console.log("That's an invalid response.");
+    showMenu();
+  }
+};

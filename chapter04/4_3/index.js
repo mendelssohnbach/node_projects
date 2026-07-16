@@ -8,7 +8,7 @@ const mockDB = { passwords: {} };
 
 const saveNewPassword = (password) => {
   // プレーンテキストをハッシュ化し、データベース内の hash キーにセット
-  mockDB.hash = bcrypt.hashSycn(password, 10);
+  mockDB.hash = bcrypt.hashSync(password, 10);
   console.log('Main password has been set!');
   showMenu();
 };

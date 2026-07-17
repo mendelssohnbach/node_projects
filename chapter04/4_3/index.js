@@ -1,5 +1,18 @@
 import bcrypt from 'bcrypt';
+import { MongoClient } from 'mongodb';
 import promptModule from 'prompt-sync';
+
+// dbUrl: ローカルのMongoDBサーバーに接続するための定義
+// 環境変数 MONGO_URL があればこれを優先する
+const dbUrl = process.env.MONGO_URL || 'mongodb://localhost:27017';
+// 接続URLを使って Mongoクライアントのインスタンス作成
+const client = new MongoClient(dbUrl);
+// データベース名 passwordManager に設定
+const dbName = 'passwordManager';
+
+// マスターパスワードが祖運剤するかを追跡するためのフラグを宣言
+let hasPasswords = false;
+let passwordsCollection, authCollection;
 
 // prompt をインスタンス化し、同期的にプロンプト機能を利用
 const prompt = promptModule();

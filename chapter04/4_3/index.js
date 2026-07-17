@@ -55,7 +55,7 @@ const showMenu = async () => {
 
   // 1-4の値を選択すると
   if (response === '1')
-    viewPasswords(); // 1: 新しいパスワードの追加
+    viewPasswords(); // 1: パスワードの表示
   else if (response === '2')
     promptManageNewPassword(); // // 2: 新しいパスワードの追加
   else if (response === '3')
@@ -80,7 +80,7 @@ const viewPasswords = () => {
     // forEach: 配列の要素を順次処理
     // データベース内のパスワードを繰り返し出力
     entries.forEach(([key, value], index) => {
-      console.log(`${index + 1}, ${key} => ${value}`);
+      console.log(`${index + 1}: ${key} => ${value}`);
     });
   }
   showMenu();
@@ -96,3 +96,10 @@ const promptManageNewPassword = () => {
   console.log(`Password for ${source} has been saved!`);
   showMenu();
 };
+
+// ローカルパスワードが保存されていない場合、
+// 新しいマスターパスワードを入力する必要があるかチェック
+if (!mockDB.hash) promptNewPassword();
+// ローカルパスワードが保存されていれば、
+// 既存のパスワード処理を呼び出す
+else promptOldPassword();

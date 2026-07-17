@@ -135,9 +135,9 @@ const promptManageNewPassword = () => {
   showMenu();
 };
 
-// ローカルパスワードが保存されていない場合、
-// 新しいマスターパスワードを入力する必要があるかチェック
+// main関数を呼び出す
+// passwordsCollection と authCollection の割当に用いる
 if (!mockDB.hash) promptNewPassword();
 // ローカルパスワードが保存されていれば、
-// 既存のパスワード処理を呼び出す
+// マスターパスワードの作成またはバリデーションを行う
 else promptOldPassword();

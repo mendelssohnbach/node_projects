@@ -135,6 +135,7 @@ const promptManageNewPassword = () => {
   showMenu();
 };
 
+await main();
 // main関数を呼び出す
 // passwordsCollection と authCollection の割当に用いる
 if (!mockDB.hash) promptNewPassword();

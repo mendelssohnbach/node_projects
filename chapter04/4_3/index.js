@@ -14,6 +14,31 @@ const dbName = 'passwordManager';
 let hasPasswords = false;
 let passwordsCollection, authCollection;
 
+// データベースを初期化するための amin 関数
+const main = async () => {
+  try {
+    await client.connect(); // client.collection でデータベースとの接続を確立
+    console.log('Connected successfully to server');
+    // dbName = passwordManager という名前のデータベースを作成するか
+    // または、その名前のデータベースに接続する
+    const db = client.db(dbName);
+    // auth コレクションを扱う変数を宣言
+    authCollection = db.collection('auth');
+    // passwords コレクションを扱う変数を宣言
+    passwordsCollection = db.collection('passwords');
+    // type が auth である、ハッシュ化パスワードが
+    // authCollection 内に存在するか確認
+    const hashedPassword = await authCollection.findOne({ type: 'auth' });
+    // データベース検索閣下のブール値を hasPasswords に代入
+    hasPasswords = !!hashedPassword;
+  } catch (error) {
+    // データベース接続に問題があれば、エラーを出力
+    console.error('Error connecting to the database:', error);
+    // プロセスを終了する
+    process.exit(1);
+  }
+};
+
 // prompt をインスタンス化し、同期的にプロンプト機能を利用
 const prompt = promptModule();
 // メモリ内ストレージを表すオブジェクト定義

@@ -2,6 +2,8 @@ import bcrypt from 'bcrypt';
 import { MongoClient } from 'mongodb';
 import promptModule from 'prompt-sync';
 
+const prompt = promptModule();
+
 // dbUrl: ローカルのMongoDBサーバーに接続するための定義
 // 環境変数 MONGO_URL があればこれを優先する
 const dbUrl = process.env.MONGO_URL || 'mongodb://localhost:27017';
@@ -39,26 +41,34 @@ const main = async () => {
   }
 };
 
-// prompt をインスタンス化し、同期的にプロンプト機能を利用
-const prompt = promptModule();
-// メモリ内ストレージを表すオブジェクト定義
-const mockDB = { passwords: {} };
-
-const saveNewPassword = (password) => {
-  // プレーンテキストパスワードをハッシュ化し、データベース内の hash キーにセット
-  mockDB.hash = bcrypt.hashSync(password, 10);
-  console.log('Main password has been set!');
-  showMenu();
+const saveNewPassword = async (password) => {
+  // プレーンテキストパスワードをハッシュ化
+  const hash = bcrypt.hashSync(password, 10);
+  // ハッシュ化後パスワードをデータベースに保存
+  //  登録保存されるデータは1件のみに制限
+  await authCollection.insertOne({ type: 'auth', hash });
+  // パスワードが保存されたことを標準出力
+  console.log('Password has been saved!');
+  await showMenu();
 };
 
 // プレーンテキストパスワードとハッシュ化パスワードを比較する関数
 // 入力されたパスワードとローカルデータベース内の値を比較する
-const compareHashedPassword = async (password) => await bcrypt.compare(password, mockDB.hash);
+const compareHashedPassword = async (password) => {
+  // authCollection内からハッシュ化パスワードを検索し、
+  // 変数 hash 分割代入する
+  const { hash } = await authCollection.findOne({ type: 'auth' });
+  if (!hash) {
+    throw new Error('No stored hash found.');
+  }
+  // プレーンテキストパスワードとハッシュ化パスワードを検証する
+  return await bcrypt.compare(password, hash);
+};
 
-const promptNewPassword = () => {
+const promptNewPassword = async () => {
   // 新しいマスターパスワードを入力するよう促す
   const response = prompt('Enter a main password: ');
-  saveNewPassword(response);
+  return saveNewPassword(response);
 };
 
 const promptOldPassword = async () => {
@@ -74,12 +84,24 @@ const promptOldPassword = async () => {
       // パスワードがバリデーションされたらバリデーションフラグを true に設定
       verified = true;
       // メニューを表示
-      showMenu();
+      await showMenu();
     } else {
       // パスワードが正しくない場合は、エラーを表示し再試行する
       console.log('Password incorrect. Try again.');
     }
   }
+};
+
+const viewPasswords = async () => {
+  // passwordsCollection から全てのパスワードを取得
+  // find({}) : 条件なしで全列全行検索
+  // toArray で配列に変換
+  const passwords = await passwordsCollection.find({}).toArray();
+  // 配列をループ処理
+  passwords.forEach(({ source, password }, index) => {
+    console.log(`${index + 1}. ${source} => ${password}`);
+  });
+  await showMenu();
 };
 
 const showMenu = async () => {
@@ -92,53 +114,47 @@ const showMenu = async () => {
   const response = prompt('>');
 
   // 1-4の値を選択すると
-  if (response === '1')
-    viewPasswords(); // 1: パスワードの表示
-  else if (response === '2')
-    promptManageNewPassword(); // // 2: 新しいパスワードの追加
-  else if (response === '3')
-    promptOldPassword(); // :3: マスターパスワードのバリデーション
-  else if (response === '4')
-    process.exit(); // 4: アプリの終了
-  else {
-    // 有効な値が選択されない場合は、再選択を促す
-    console.log("That's an invalid response.");
-    showMenu();
+  switch (response) {
+    case '1': // 1: パスワードの表示
+      await viewPasswords();
+      break;
+    case '2': // 2: 新しいパスワードの追加
+      await promptManageNewPassword();
+      break;
+    case '3': // :3: マスターパスワードのバリデーション
+      await promptOldPassword();
+      break;
+    case '4': // 4: アプリの終了
+      process.exit();
+      break;
+    default: // 有効な値が選択されない場合は、再選択を促す
+      console.log("That's an invalid response.");
+      await showMenu();
   }
 };
 
-const viewPasswords = () => {
-  // mockDBからpasswords を分割代入する
-  const { passwords } = mockDB;
-  const entries = Object.entries(passwords);
-  if (entries.length === 0) {
-    console.log('No passwords saved yet.');
-  } else {
-    // entries: 2次元配列(source, password)
-    // forEach: 配列の要素を順次処理
-    // データベース内のパスワードを繰り返し出力
-    entries.forEach(([key, value], index) => {
-      console.log(`${index + 1}: ${key} => ${value}`);
-    });
-  }
-  showMenu();
-};
-
-const promptManageNewPassword = () => {
+const promptManageNewPassword = async () => {
   // 管理したいソース名と新しいパスワードの入力を促す
   const source = prompt('Enter name for password: ');
   const password = prompt('Enter password to save: ');
-
-  // ソースとパスワードのペアをmockDBに保存
-  mockDB.passwords[source] = password;
+  // パスワードエントリーが存在しない場合は、新しいパスワードエントリーを追加し、
+  // 古い値が存在している場合には上書き更新
+  await passwordsCollection.findOneAndUpdate(
+    { source },
+    { $set: { password } },
+    {
+      returnDocument: 'after', // 更新後のドキュメントを返す
+      upsert: true, // 一致するドキュメントがない場合に審査機作成
+    },
+  );
   console.log(`Password for ${source} has been saved!`);
-  showMenu();
+  await showMenu();
 };
 
 await main();
 // main関数を呼び出す
 // passwordsCollection と authCollection の割当に用いる
-if (!mockDB.hash) promptNewPassword();
+if (!hasPasswords) promptNewPassword();
 // ローカルパスワードが保存されていれば、
 // マスターパスワードの作成またはバリデーションを行う
 else promptOldPassword();

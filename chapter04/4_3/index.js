@@ -6,7 +6,9 @@ const prompt = promptModule();
 
 // dbUrl: ローカルのMongoDBサーバーに接続するための定義
 // 環境変数 MONGO_URL があればこれを優先する
-const dbUrl = process.env.MONGO_URL || 'mongodb://localhost:27017';
+// const dbUrl = process.env.MONGO_URL || 'mongodb://localhost:27017';
+const uri = 'mongodb://root:password123@localhost:27017/mydatabase?authSource=admin';
+const dbUrl = process.env.MONGO_URL || uri;
 // 接続URLを使って Mongoクライアントのインスタンス作成
 const client = new MongoClient(dbUrl);
 // データベース名 passwordManager に設定

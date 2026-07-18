@@ -43,30 +43,38 @@ const main = async () => {
   }
 };
 
+// ユーザーが入力したマスターパスワードを安全にハッシュ化し
+// データベースに保存
 const saveNewPassword = async (password) => {
+  // 4章 1-a, 1-b: ソルトラウンド数を入力するよう促す
+  const saltRoundsInput = prompt('Enter salt rounds (default: 10): ');
+  // 4章 1-a: ユーザー入力を数値に変換し、
+  // 無効な入力ならデフォルト値W 10 を代入
+  const saltRounds = parseInt(saltRoundsInput, 10) || 10;
   // プレーンテキストパスワードをハッシュ化
-  const hash = bcrypt.hashSync(password, 10);
+  const hash = bcrypt.hashSync(password, saltRounds);
   // ハッシュ化後パスワードをデータベースに保存
   //  登録保存されるデータは1件のみに制限
-  await authCollection.insertOne({ type: 'auth', hash });
+  // 4章 1^c
+  await authCollection.insertOne({ type: 'auth', hash, saltRounds });
   // パスワードが保存されたことを標準出力
-  console.log('Password has been saved!');
+  console.log(`Password has been saved! (salt rounds: ${saltRounds})`);
   await showMenu();
 };
 
 // プレーンテキストパスワードとハッシュ化パスワードを比較する関数
 // 入力されたパスワードとローカルデータベース内の値を比較する
 const compareHashedPassword = async (password) => {
-  // authCollection内からハッシュ化パスワードを検索し、
-  // 変数 hash 分割代入する
-  const { hash } = await authCollection.findOne({ type: 'auth' });
-  if (!hash) {
+  const authDoc = await authCollection.findOne({ type: 'auth' });
+  if (!authDoc || !authDoc.hash) {
     throw new Error('No stored hash found.');
   }
+  console.log(`Using salt rounds: ${authDoc.saltRounds}`);
   // プレーンテキストパスワードとハッシュ化パスワードを検証する
-  return await bcrypt.compare(password, hash);
+  return await bcrypt.compare(password, authDoc.hash);
 };
 
+// 新しいマスターパスワードを入力するよう促す関数
 const promptNewPassword = async () => {
   // 新しいマスターパスワードを入力するよう促す
   const response = prompt('Enter a main password: ');
@@ -106,16 +114,32 @@ const viewPasswords = async () => {
   await showMenu();
 };
 
+// 4章 2-a, 2-d
+// サービス名に紐づくぱしワードを検索して表示する関数
+const findPasswordBySource = async () => {
+  // ソース名を入力するよう促す
+  const source = prompt('Enter source name to search: ');
+  // source フィールドと入力文字が一致知るドキュメントデータを1件検索
+  const result = await passwordsCollection.findOne({ source });
+  if (result) {
+    console.log(`${result.source} => ${result.password}`);
+  } else {
+    console.log('No password saved for that source.');
+  }
+  await showMenu();
+};
+
 const showMenu = async () => {
-  // 4つの選択肢を表示
+  // 5つの選択肢を表示
   console.log(`
     1. View passwords
     2. Manage new password
     3. Verify password
-    4. Exit`);
+    4. Exit
+    5. Find password by source`);
   const response = prompt('>');
 
-  // 1-4の値を選択すると
+  // 1-5の値を選択すると
   switch (response) {
     case '1': // 1: パスワードの表示
       await viewPasswords();
@@ -128,6 +152,9 @@ const showMenu = async () => {
       break;
     case '4': // 4: アプリの終了
       process.exit();
+      break;
+    case '5':
+      await findPasswordBySource();
       break;
     default: // 有効な値が選択されない場合は、再選択を促す
       console.log("That's an invalid response.");

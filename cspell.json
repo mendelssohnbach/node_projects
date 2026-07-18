@@ -8,7 +8,6 @@
     ".vscode",
     ".vscode-insiders"
   ],
-  "ignoreWords": ["imgtext", "navbtn", "lorem", "ipsum", "dolor", "sit", "amet"],
+  "ignoreWords": ["imgtext", "navbtn", "lorem", "ipsum", "dolor", "sit", "amet", "mydatabase"],
   "words": ["precommit"]
 }
-

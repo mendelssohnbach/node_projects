@@ -1,5 +1,10 @@
+import promptModule from 'prompt-sync';
 import Parser from 'rss-parser';
 
+// カスタムフィード項目配列の定義
+const customItems = [];
+// prompt関数の初期化
+const prompt = promptModule({ sigint: true });
 // Parser クラスをインスタンス化
 const parser = new Parser();
 
@@ -44,10 +49,16 @@ const aggregate = (responses, feedItems) => {
 };
 
 const print = (feedItems) => {
+  // 新しいフィード項目のタイトルとリンクを追加するよう促す
+  const res = prompt(`Add item: `);
+  // 入力文字列を感まで分解し、分割代入する
+  const [title, link] = res.split(',');
+  // title,link が存在すれば項目オブジェクトを customItems に追加
+  if (![title, link].includes(undefined)) customItems.push({ title, link });
   // 標準出力をクリア
   console.clear();
   // feedItems の内容をテーブル形式で出力
-  console.table(feedItems);
+  console.table(feedItems.concat(customItems));
   // 最終更新日時をUTC系s機で表示
   console.log('Last updated ', new Date().toUTCString());
 };

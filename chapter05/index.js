@@ -3,8 +3,11 @@ import Parser from 'rss-parser';
 // Parser クラスをインスタンス化
 const parser = new Parser();
 
-// 指定したURLに対してGETリクエストを行う
-const url = 'https://www.bonappetit.com/feed/recipes-rss-feed/rss';
+// RSSフィードを取得するURL
+const urls = [
+  'https://www.bonappetit.com/feed/recipes-rss-feed/rss',
+  `https://www.budgetbytes.com/category/recipes/feed/`,
+];
 
 // HTTPリクエストの処理をまとめる非同期関数
 const main = async () => {

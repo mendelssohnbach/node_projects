@@ -25,5 +25,32 @@ const main = async () => {
   print(feedItems);
 };
 
+// RSSレスポンスと feedItems 配列を受け取る
+const aggregate = (responses, feedItems) => {
+  // フィードレスポンス responses をループし、
+  // 分割代入で items のみ取得
+  for (let { items } of responses) {
+    // items をさらにループ処理し、 title と link を抽出
+    for (let { title, link } of items) {
+      // title に文字列 ham という部分文字列が含まれていれば
+      if (title.toLowerCase().includes('chicken')) {
+        // feedItems 配列に追加
+        feedItems.push({ title, link });
+      }
+    }
+  }
+  // feed配列を返す
+  return feedItems;
+};
+
+const print = (feedItems) => {
+  // 標準出力をクリア
+  console.clear();
+  // feedItems の内容をテーブル形式で出力
+  console.table(feedItems);
+  // 最終更新日時をUTC系s機で表示
+  console.log('Last updated ', new Date().toUTCString());
+};
+
 // 2秒ごとに取得する
 setInterval(main, 3000);

@@ -11,19 +11,18 @@ const urls = [
 
 // HTTPリクエストの処理をまとめる非同期関数
 const main = async () => {
-  // RSSフィードのCMLを取得解析し、 title と items に分割代入
-  const { title, items } = await parser.parseURL(url);
-
-  // 更新のたびにコンソールをクリアする
-  console.clear(); // a
-  console.log(title); // フィードのタイトルを表示
-  // 項目毎の title,link を抽出
-  const results = items.map(({ title, link }) => ({ title, link }));
-  // テーブル形式で出力
-  console.table(results);
-
-  // タイムスタンプ表示
-  console.log('Last updated:', new Date().toUTCString());
+  // RSSフィード項目を格納する空配列
+  const feedItems = [];
+  // 各配列parseURLを実行
+  // 外部RSSエンドポイントからのレスポンスをPromiseオブジェクト
+  const awaitableRequests = urls.map((url) => parser.parseURL(url));
+  // 全てのPromiseがリクエストを完了するのを待ち、レスポンスを収集
+  const responses = await Promise.all(awaitableRequests);
+  // レスポンスと feedItems 配列を aggregate関数に渡す
+  // aggregate関数はRSSフィードの結果をまとめる
+  aggregate(responses, feedItems);
+  // 結果のfeedItems配列を print 関数に渡す
+  print(feedItems);
 };
 
 // 2秒ごとに取得する

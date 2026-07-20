@@ -14,5 +14,8 @@
     "@types/node": "^26.1.0",
     "eslint": "^10.7.0",
     "globals": "^17.7.0"
+  },
+  "dependencies": {
+    "prompt-sync": "^4.2.0"
   }
 }
